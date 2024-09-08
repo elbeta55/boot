@@ -39,7 +39,7 @@ async def fetch_jobs(query: str, company: str) -> list:
                         company_element = job_element.find('div', class_='card__job-empname-label')
                         location = job_element.find('div', class_='card__job-location')
                         date_posted = job_element.find('div', class_='c-card__jobDatePosted')
-                        
+
                         if title and company_element and location and company.lower() in company_element.get_text(strip=True).lower():
                             job_info = (
                                 f"**{title.get_text(strip=True)}**\n"
