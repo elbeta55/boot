@@ -39,17 +39,19 @@ async def fetch_jobs(query: str, company: str) -> list:
                     company_element = job_element.find('div', class_='card__job-empname-label')
                     location = job_element.find('div', class_='card__job-location')
                     date_posted = job_element.find('div', class_='c-card__jobDatePosted')
-                    link = job_element.find('a', class_='card__job-link')['href']
+                    link_element = job_element.find('a', class_='card__job-link')
 
-                    if title and company_element and location and company.lower() in company_element.get_text(strip=True).lower():
-                        job_info = (
-                            f"**{title.get_text(strip=True)}**\n"
-                            f"*{company_element.get_text(strip=True)}*\n"
-                            f"Location: {location.get_text(strip=True)}\n"
-                            f"Date Posted: {date_posted.get_text(strip=True) if date_posted else 'No date provided'}\n"
-                            f"Apply Here: [Job Link](https://www.talent.com{link})"
-                        )
-                        jobs.append(job_info)
+                    if title and company_element and location and link_element:
+                        link = link_element['href']
+                        if company.lower() in company_element.get_text(strip=True).lower():
+                            job_info = (
+                                f"**{title.get_text(strip=True)}**\n"
+                                f"*{company_element.get_text(strip=True)}*\n"
+                                f"Location: {location.get_text(strip=True)}\n"
+                                f"Date Posted: {date_posted.get_text(strip=True) if date_posted else 'No date provided'}\n"
+                                f"Apply Here: [Job Link](https://www.talent.com{link})"
+                            )
+                            jobs.append(job_info)
                 return jobs
             else:
                 logger.error(f"Error fetching jobs: HTTP {response.status_code} for URL {url}")
