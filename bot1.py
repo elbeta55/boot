@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 # Token del bot y ID del canal
 TOKEN = os.getenv('7531466772:AAEh8GgLMBQFJV1_J1rHfSqa7yYMmVQ9G-I')  # Usar variable de entorno para el token
-CHANNEL_ID = os.getenv('TELEGRAM_CHANNEL_ID')
+CHANNEL_ID = os.getenv('-1002439937008')
 
 # Términos de búsqueda y empresas asociadas
 SEARCH_TERMS = {
