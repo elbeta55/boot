@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # Token del bot y ID del canal
 TOKEN = '7531466772:AAEh8GgLMBQFJV1_J1rHfSqa7yYMmVQ9G-I'
-CHANNEL_ID = '-1002227999301'  # ID del canal
+CHANNEL_ID = '-1002439937008'  # ID del canal
 
 # Términos de búsqueda y empresas asociadas
 SEARCH_TERMS = {
@@ -20,7 +20,7 @@ SEARCH_TERMS = {
 }
 
 # Número de búsquedas a realizar
-NUM_SEARCHES = 30
+NUM_SEARCHES = 50
 
 # Almacenar los últimos resultados
 last_results = set()
