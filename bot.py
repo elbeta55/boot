@@ -1,5 +1,5 @@
-import aiohttp
-from telegram import Bot
+import httpx
+from telegram import Bot, Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from bs4 import BeautifulSoup
 import asyncio
@@ -10,7 +10,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 # Token del bot y ID del canal
-TOKEN = '7531466772:AAEh8GgLMBQFJV1_J1rHfSqa7yYMmVQ9G-I'
+TOKEN = '7502094787:AAEKk69WI3S6l6ufllz7oxVQqE6Lv5Cv6vo'
 CHANNEL_ID = '-1002227999301'  # ID del canal
 
 # Términos de búsqueda y empresas asociadas
@@ -29,29 +29,29 @@ async def fetch_jobs(query: str, company: str) -> list:
     """Busca empleos relacionados con Spark Driver en la empresa especificada."""
     url = f'https://www.talent.com/jobs?k={query.replace(" ", "+")}&l=Estados+unidos'
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    soup = BeautifulSoup(await response.text(), 'html.parser')
-                    jobs = []
-                    for job_element in soup.find_all('div', class_='card__job-c'):
-                        title = job_element.find('h2', class_='card__job-title')
-                        company_element = job_element.find('div', class_='card__job-empname-label')
-                        location = job_element.find('div', class_='card__job-location')
-                        date_posted = job_element.find('div', class_='c-card__jobDatePosted')
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                jobs = []
+                for job_element in soup.find_all('div', class_='card__job-c'):
+                    title = job_element.find('h2', class_='card__job-title')
+                    company_element = job_element.find('div', class_='card__job-empname-label')
+                    location = job_element.find('div', class_='card__job-location')
+                    date_posted = job_element.find('div', class_='c-card__jobDatePosted')
 
-                        if title and company_element and location and company.lower() in company_element.get_text(strip=True).lower():
-                            job_info = (
-                                f"**{title.get_text(strip=True)}**\n"
-                                f"*{company_element.get_text(strip=True)}*\n"
-                                f"Location: {location.get_text(strip=True)}\n"
-                                f"Date Posted: {date_posted.get_text(strip=True) if date_posted else 'No date provided'}"
-                            )
-                            jobs.append(job_info)
-                    return jobs
-                else:
-                    logger.error(f"Error fetching jobs: HTTP {response.status} for URL {url}")
-                    return []
+                    if title and company_element and location and company.lower() in company_element.get_text(strip=True).lower():
+                        job_info = (
+                            f"**{title.get_text(strip=True)}**\n"
+                            f"*{company_element.get_text(strip=True)}*\n"
+                            f"Location: {location.get_text(strip=True)}\n"
+                            f"Date Posted: {date_posted.get_text(strip=True) if date_posted else 'No date provided'}"
+                        )
+                        jobs.append(job_info)
+                return jobs
+            else:
+                logger.error(f"Error fetching jobs: HTTP {response.status_code} for URL {url}")
+                return []
     except Exception as e:
         logger.error(f"Error while fetching jobs: {str(e)} for URL {url}")
         return []
@@ -103,6 +103,7 @@ def main() -> None:
 
     application.add_handler(CommandHandler("start", start))
 
+    # Añadir la tarea periódica al bucle de eventos
     loop = asyncio.get_event_loop()
     loop.create_task(periodic_task())
 
