@@ -21,7 +21,7 @@ SEARCH_TERMS = {
 }
 
 # Número de búsquedas a realizar
-NUM_SEARCHES = 30
+NUM_SEARCHES = 100
 
 # Almacenar los últimos resultados
 last_results = set()
