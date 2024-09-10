@@ -41,6 +41,13 @@ async def fetch_jobs(query: str, company: str) -> list:
                     date_posted = job_element.find('div', class_='c-card__jobDatePosted')
                     link_element = job_element.find('a', class_='card__job-link')
 
+                    # Depuración de datos extraídos
+                    logger.debug(f"Title: {title}")
+                    logger.debug(f"Company Element: {company_element}")
+                    logger.debug(f"Location: {location}")
+                    logger.debug(f"Date Posted: {date_posted}")
+                    logger.debug(f"Link Element: {link_element}")
+
                     if title and company_element and location and link_element:
                         link = link_element['href']
                         if company.lower() in company_element.get_text(strip=True).lower():
@@ -52,6 +59,7 @@ async def fetch_jobs(query: str, company: str) -> list:
                                 f"Apply Here: [Job Link](https://www.talent.com{link})"
                             )
                             jobs.append(job_info)
+                logger.info(f"Found {len(jobs)} jobs for query: {query}")
                 return jobs
             else:
                 logger.error(f"Error fetching jobs: HTTP {response.status_code} for URL {url}")
@@ -70,6 +78,7 @@ async def search_jobs() -> set:
         results = await asyncio.gather(*tasks)
         for job_list in results:
             all_jobs.update(job_list)
+    logger.info(f"Total jobs found in this search cycle: {len(all_jobs)}")
     return all_jobs
 
 async def notify_new_jobs() -> None:
@@ -77,6 +86,7 @@ async def notify_new_jobs() -> None:
     global last_results
     new_jobs = await search_jobs()
     new_posts = new_jobs - last_results
+    logger.info(f"New jobs found: {len(new_posts)}")
     if new_posts:
         last_results = new_jobs  # Actualiza los últimos resultados con todos los trabajos encontrados
         bot = Bot(token=TOKEN)
